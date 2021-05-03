@@ -1,0 +1,138 @@
+---
+title: "Exam 2"
+output: html_document
+---
+You will submit this exam as a hardcopy Rmarkdown file (printed and stapled) to me by the end of class on May 2, 2021.  Then email me your .Rmd file to docs4class@gmail.com.
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r, include=FALSE}
+library(dplyr)
+library(nycflights13)
+library(ggplot2)
+data(flights)
+#https://ucla-data-archive.github.io/intro-r-tidyv/06-visualization-airline/index.html
+#file:///C:/Users/jtturner/Desktop/Bdsi_2019_r_practice_dplyr_nycflights_answers.pdf
+
+```
+
+```{r echo=FALSE, eval=FALSE}
+describe_temp <- function(temp) {
+  if (temp <= 0) {
+    "freezing"
+  } else if (temp <= 10) {
+    "cold"
+  } else if (temp <= 20) {
+    "cool"
+  } else if (temp <= 30) {
+    "warm"
+  } else {
+    "hot"
+  }
+}
+describe_temp(17)
+```
+
+#### Functions
+
+1. Create a function called GPA_analysis.  For this function, when you submit a GPA, the function should return whether or not this qualifies for honors based on the criteria below.  Create the function and show that it works on various values. 
+
+- Cum laude:  3.5-3.7 GPA.
+- Magna cum laude:  3.8-3.9 GPA.
+- Summa cum laude:  >3.9-4.0 GPA.
+
+2. a)Create a function called Gerald that uses a single variable named S. The function should replace S with the square of S and repeat this process until S is either greater than 10^15 or less than 10^-15. b) Try this too once you get part a): The function should return a value Q containing the number of times S was squared during this process.
+
+
+Examples:
+
+- If S = 100, Q =3 (S equals 10^16 after the third square).
+- If S = 0.1, Q=4 (S equals 10^-16 after the fourth square).
+- If S = 3, Q =5 (S equals 1.853 x 10^15 after the fifth square).
+
+#### Relational data, lubridate and wrangling using the `nycflights13` pacakge and datasets
+
+3. What was the most common plane model to fly out of NYC in October with how many flights?
+```{r, echo=FALSE, eval=FALSE}
+flights %>% filter(month==10) %>%
+inner_join(planes, "tailnum") %>%
+count(model) %>%
+top_n(1,n)
+```
+
+4. How many planes (tailnum) only flew one route (flight) but flew that route more than 10
+times?
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, eval=FALSE}
+flights %>%
+group_by(tailnum) %>%
+summarize(routes = n_distinct(flight), flights=n()) %>%
+filter(routes==1, flights>10) %>% nrow()
+```
+
+
+5. Which scheduled departure hour (use the "hour" column) had the largest proportion of flights delayed (dep_delay) longer than 5 min?
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, eval=FALSE}
+flights %>% group_by(hour) %>%
+summarize(perc_delay=mean(dep_delay>5, na.rm=T)) %>%
+top_n(1, perc_delay)
+```
+
+6. For all Alaska Air flights, show a plot (like the one below) showing the relationship exists between dep_delay and arr_delay.
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+alaska_flights <- flights %>%
+  filter(carrier == "AS")
+ggplot(data = alaska_flights,
+       mapping = aes(x = dep_delay, y = arr_delay)) +
+geom_point() +
+geom_smooth(method=lm)
+```
+
+7. What day of the week saw the most flights?
+```{r, echo=FALSE, warning=FALSE, message=FALSE, eval=FALSE}
+flights %>% count(weekdays(time_hour)) %>% top_n(1, n)
+```
+
+
+8. What was the average number of seats and engines on the plains that left from NYC on July
+4?
+```{r, echo=FALSE, warning=FALSE, message=FALSE, eval=FALSE}
+flights %>% filter(month==7, day==4) %>%
+inner_join(planes, "tailnum") %>%
+select(seats, engines) %>%
+summarize_all(mean)
+```
+
+#### Trees and models
+
+9. Use the `Boston` dataset from the `MASS` package to use random forests, pruning, boosting, and bagging.  `Boston` gives housing values and other statistics in each of 506 suburbs of Boston based on a 1970 census.  After loading the `MASS` package `?Boston` will give you great details about the data.  Build at least two models predicting `medv` --- which is the median value of owner-occupied homes in \$1000s --- one model being a random forest and another of your choosing.  Which is better?  Which variables are most important in predicting `medv`?
+
+```{r, eval=FALSE, echo=FALSE, warning=FALSE, message=FALSE}
+#http://tiantiy.people.clemson.edu/blog/2019/Machine%20Learning/ISLR-RandomForestandBoosting.html
+install.packages("randomForest")
+install.packages("MASS") # for boston housing package
+RNGkind(sample.kind = "Rounding") 
+
+# Data Partitioning 
+set.seed(101)
+train=sample(1:nrow(Boston), 300)
+# Fit the model on training set using randomForest
+rf.boston=randomForest(medv~., data=Boston, subset=train)
+rf.boston
+library(gbm) 
+boost.boston=gbm(medv~., data=Boston[train,], distribution="gaussian", n.trees=10000, shrinkage=0.01, interaction.depth=4) 
+                    # interaction.depth is the number of splits
+                    # shrinkage is how much we're going to shrink the trees there back
+
+# I just choose those parameters and one can always fiddle around with these parameters to decide which to use. 
+
+# Variable importance plot
+summary(boost.boston)
+```
+
+10. Draw some conclusions and interpretations from #9 as though you are providing insight to your boss who works for Zillow and wants to know what characteristics drive home values.

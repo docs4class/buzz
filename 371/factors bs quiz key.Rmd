@@ -1,0 +1,15 @@
+---
+output: 
+  html_document:
+    number_sections: true
+---
+
+
+
+```{r}
+set.seed(33)
+DIRECTION <- sample(1:4, 40, replace = TRUE)
+DIRECTION <- factor(DIRECTION, labels = c("West", "North", "South", "East"))
+table(DIRECTION)
+```
+

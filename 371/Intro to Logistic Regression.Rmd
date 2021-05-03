@@ -1,0 +1,52 @@
+---
+title: "Intro to Logistic Regression"
+author: "Turner, BADM 372"
+date: "4/21/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Imporant Concepts
+
+1. What is Logistic Regression?
+2. How is Logistic Regression different from Linear Regression?
+3. What is training data?
+4. What is test data?
+5. What is model overfitting?
+
+## Application
+
+Use the code found at the link below to answer the following questions:
+
+mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
+
+1.	Load the data.
+2.	Turn rank into a factor.
+3.	Create a logistic regression equation predicting admit by gre, gpa, and rank.
+4.	Determine which, if any, predictors are statistically significant.
+5.	Use the predict function to generate prediction probabilities for each of the observations in this data set.
+6.	Review the first 10 probabilities you created, and decide what to they mean. What do these probabilities suggest?
+7.	Create predictions so that all probabilities .5 or less are representative of not admission, and all probabilities greater than .5 are representative of admission.
+8.	Create a table that allows you to interpret how accurate your predictions are.
+9.	What percentage of your predictions are accurate? What percentage is inaccurate?
+10.	What conclusions can you draw about your model?
+
+
+```{r,echo=FALSE}
+# https://stats.idre.ucla.edu/r/dae/logit-regression/
+mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
+head(mydata)
+mydata$rank <- factor(mydata$rank)
+glm.fits <- glm(admit ~ gre + gpa + rank, data = mydata, family = "binomial")
+summary(glm.fits)
+glm.probs <- predict(glm.fits,mydata,type="response")
+glm.probs[1:10]
+glm.pred <- rep(0,400)
+glm.pred[glm.probs>.5]= 1
+table(glm.pred,mydata$admit)
+mean(glm.pred==mydata$admit)
+mean(glm.pred!=mydata$admit)
+```

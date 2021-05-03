@@ -1,0 +1,27 @@
+---
+title: "Lab 3: Medical Practice Growth and Analysis"
+output: html_document
+---
+
+## Introduction
+
+I have posted two new data files on Brightspace: `PM 225 3.26.21a` and `PM 226 3.25.21a`.  Each file is data from a separate medical office managed by the same Chief Medical Officer.
+
+This data is real-world, and it is based on two separate but related medical practices.  The data has meaningful labels, and we will discuss the data in class.
+
+This lab is a solo effort, and you will present your results to the class on Wednesday, April 7, 2021. 
+
+Use graphs, visual aids, tables, and models as you best see fit.
+
+You are to answer the following questions and  to find several points of analysis that may be beneficial to the Chief Medical Officer of the company.
+
+## Questions
+
+1. How many new patients are being added each month?
+2. Are the start-up growth rates the same between practices?  Currently?  Historically?
+3. How is patient retention?
+4. How long do patients remain patients?
+5. In what way are the two locations different in regards to patient growth and retention?
+6. What are some additional things of interest you have discovered that you could share with the Chief Medical Officer of the company?
+7. What insightful recommendations and conclusions can you draw from this data?
+

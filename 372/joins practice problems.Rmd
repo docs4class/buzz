@@ -1,0 +1,70 @@
+---
+title: "Relational Data (joins) Practice"
+author: "Turner, BADM 372"
+date: "4/14/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r, include=FALSE}
+library(dplyr)
+library(nycflights13)
+data(flights)
+```
+
+
+Data sets in package ‘nycflights13’:
+
+- airlines  -                       Airline names.
+- airports   -                      Airport metadata
+- flights    -                      Flights data
+- planes      -                     Plane metadata.
+- weather     -                     Hourly weather data
+
+## Excercises
+
+1. Remove all flights `flights` from with a missing tail number, and organize the data in descending order for most flights by tail number.  Then add the details about the plane type from `planes`.  You should get something like this:
+```{r, echo=FALSE, message=FALSE, out.width="50%"}
+q1 <- flights %>% 
+  select(tailnum) %>% 
+  filter(!is.na(tailnum)) %>% 
+  group_by(tailnum) %>% 
+  tally() %>% 
+  arrange(desc(n)) 
+q1 <-   left_join(q1, planes)
+head(q1)
+```
+
+2. Show the flight details AND weather details for the flight with the longest departure delay.  Remove flights with missing departure delays.  You should get something like this:
+
+```{r, echo=FALSE, message=FALSE, out.width="50%"}
+q2 <- flights %>% 
+  filter(!is.na(dep_delay)) %>% 
+  select(tailnum, dep_delay, year, month, day, hour, origin) %>% 
+  mutate(max.delay = max(dep_delay)) %>% 
+  filter(dep_delay==max.delay)
+q2 <- left_join(q2, weather) %>% 
+  select(tailnum, dep_delay, temp, dewp, humid, precip, wind_speed, wind_dir)
+q2
+```
+
+3. What does it mean for a flight to have a missing tailnum? What do the tail numbers that don’t have a matching record in planes have in common? (Hint: one variable explains ~90% of the problems.)
+
+4. Filter flights to only show flights with planes that have flown at least 100 flights.  How many planes meet this criteria? You should get something like `1,217`.
+
+```{r, echo=FALSE, message=FALSE}
+q4 <- flights %>%
+  select(tailnum) %>% 
+  filter(!is.na(tailnum)) %>%
+  group_by(tailnum) %>%
+  mutate(n = n()) %>%
+  filter(n >= 100) %>% 
+  group_by(tailnum) %>% 
+  count(tailnum)
+```
+
+5. Create as a class a cool, pretty hard question that uses multiple joins.  Write the question.  Answer it.  Like it.  Love it.  Share it with me.  Make sure you feel GREAT about relational data.

@@ -1,0 +1,99 @@
+---
+title: "Fun with Functions!"
+author: "Turner, BADM 372"
+date: "4/21/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+```{r, include=FALSE}
+library(dplyr)
+library(nycflights13)
+library(lubridate)
+data(flights)
+```
+
+1. What are the three key steps/parts of a function?
+
+```{r, include=FALSE}
+# There are three key steps to creating a new function:
+# 
+# You need to pick a name for the function. Here I’ve used rescale01 because this function rescales a vector to lie between 0 and 1.
+# 
+# You list the inputs, or arguments, to the function inside function. Here we have just one argument. If we had more the call would look like function(x, y, z).
+# 
+# You place the code you have developed in body of the function, a { block that immediately follows function(...).
+```
+
+2. Create the rescale01 function from R4DS.  Can you understand what each line does?  Make sure you know what range does.  Try `?range` for more details.  The range function returns a vector containing the minimum and maximum of all the given arguments. Make sure you can recreate and understand these outputs.
+
+```{r, echo=TRUE}
+
+rescale01 <- function(x) {
+  rng <- range(x, na.rm = TRUE)
+  (x - rng[1]) / (rng[2] - rng[1])
+}
+
+rescale01(c(0, 5, 10))
+rescale01(c(100, 67))
+rescale01(c(100, 50, 67, 10))
+```
+
+3.  Conditional functions.
+
+```{r, echo=TRUE}
+greet <- function(time = lubridate::now()) {
+  hr <- lubridate::hour(time)
+  # I don't know what to do about times after midnight,
+  # are they evening or morning?
+  if (hr < 12) {
+    print("good morning")
+  } else if (hr < 17) {
+    print("good afternoon")
+  } else {
+    print("good evening")
+  }
+}
+greet()
+greet(ymd_h("2017-01-08:05"))
+greet(ymd_h("2017-01-08:13"))
+greet(ymd_h("2017-01-08:20"))
+```
+
+4. Make a function for Bizz Buzz.  Bizz Buzz is a group word game for children to teach them about division, or for analytics my analytics students to learn about writing functions. Players take turns to count incrementally, replacing any number divisible by three with the word "Bizz", and any number divisible by five with the word "Buzz". If a number is divisible by both three and five one says "Bizz Buzz".
+
+```{r}
+bizzbuzz <- function(x) {
+  # these two lines check that x is a valid input
+  stopifnot(length(x) == 1)
+  stopifnot(is.numeric(x))
+  if (!(x %% 3) && !(x %% 5)) {
+    "bizzbuzz"
+  } else if (!(x %% 3)) {
+    "bizz"
+  } else if (!(x %% 5)) {
+    "buzz"
+  } else {
+    # ensure that the function returns a character vector
+    as.character(x)
+  }
+}
+
+```
+
+```{r, echo=TRUE}
+
+bizzbuzz(6)
+bizzbuzz(7)
+bizzbuzz(10)
+bizzbuzz(15)
+bizzbuzz(21)
+bizzbuzz(333)
+
+```
+
+
